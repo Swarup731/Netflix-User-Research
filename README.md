@@ -117,7 +117,7 @@ git init
 git add .
 git commit -m "Netflix UX case study: research, IA, user journeys, wireframes"
 git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo-name>.git
+git remote add origin https://github.com/Swarup731/Netflix-User-Research
 git push -u origin main
 ```
 Then submit the resulting GitHub repo URL as your milestone link.
