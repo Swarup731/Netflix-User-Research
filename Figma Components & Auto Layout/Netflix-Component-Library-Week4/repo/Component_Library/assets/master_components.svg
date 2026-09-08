@@ -1,0 +1,109 @@
+<svg viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="760" fill="#141414"/>
+  <text x="40" y="48" fill="#FFFFFF" font-size="26" font-weight="bold">Master Components — Reference Sheet</text>
+  <text x="40" y="72" fill="#B3B3B3" font-size="14">9 components · Netflix-style UI · Task 1</text>
+
+  <!-- Button/Primary -->
+  <g>
+    <rect x="40" y="110" width="340" height="150" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="60" y="136" fill="#8C8C8C" font-size="12">Button/Primary</text>
+    <rect x="60" y="150" width="90" height="40" rx="4" fill="#FFFFFF"/>
+    <polygon points="95,164 95,176 108,170" fill="#141414"/>
+    <text x="118" y="175" fill="#141414" font-size="13" font-weight="bold">Play</text>
+    <rect x="60" y="205" width="260" height="40" rx="4" fill="#FFFFFF"/>
+    <polygon points="75,219 75,231 88,225" fill="#141414"/>
+    <text x="98" y="230" fill="#141414" font-size="13" font-weight="bold">Find Something to Watch</text>
+  </g>
+
+  <!-- Button/Secondary -->
+  <g>
+    <rect x="420" y="110" width="340" height="150" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="440" y="136" fill="#8C8C8C" font-size="12">Button/Secondary</text>
+    <rect x="440" y="150" width="120" height="40" rx="4" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+    <text x="458" y="175" fill="#FFFFFF" font-size="13" font-weight="bold">+ My List</text>
+    <rect x="440" y="205" width="150" height="40" rx="4" fill="none" stroke="#FFFFFF" stroke-width="1.5"/>
+    <text x="458" y="230" fill="#FFFFFF" font-size="13" font-weight="bold">ⓘ More Info</text>
+  </g>
+
+  <!-- Input/Search -->
+  <g>
+    <rect x="800" y="110" width="360" height="150" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="820" y="136" fill="#8C8C8C" font-size="12">Input/Search</text>
+    <rect x="820" y="160" width="320" height="44" rx="4" fill="#0A0A0A" stroke="#4D4D4D" stroke-width="1"/>
+    <circle cx="845" cy="182" r="7" fill="none" stroke="#B3B3B3" stroke-width="2"/>
+    <line x1="850" y1="187" x2="856" y2="193" stroke="#B3B3B3" stroke-width="2"/>
+    <text x="868" y="187" fill="#8C8C8C" font-size="13">Search titles, people, genres</text>
+    <text x="1090" y="187" fill="#B3B3B3" font-size="14">✕</text>
+  </g>
+
+  <!-- Chip/Filter -->
+  <g>
+    <rect x="40" y="280" width="340" height="130" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="60" y="306" fill="#8C8C8C" font-size="12">Chip/Filter</text>
+    <rect x="60" y="320" width="90" height="34" rx="17" fill="#2B2B2B" stroke="#4D4D4D"/>
+    <text x="80" y="342" fill="#FFFFFF" font-size="12">Action</text>
+    <rect x="160" y="320" width="130" height="34" rx="17" fill="#2B2B2B" stroke="#4D4D4D"/>
+    <text x="180" y="342" fill="#FFFFFF" font-size="12">Sci-Fi &amp; Fantasy</text>
+  </g>
+
+  <!-- Chip/Time -->
+  <g>
+    <rect x="420" y="280" width="340" height="130" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="440" y="306" fill="#8C8C8C" font-size="12">Chip/Time</text>
+    <rect x="440" y="320" width="130" height="34" rx="17" fill="#2B2B2B" stroke="#4D4D4D"/>
+    <text x="460" y="342" fill="#FFFFFF" font-size="12">Under 30 min</text>
+    <rect x="590" y="320" width="150" height="34" rx="17" fill="#2B2B2B" stroke="#4D4D4D"/>
+    <text x="608" y="342" fill="#FFFFFF" font-size="12">Feature length</text>
+  </g>
+
+  <!-- Card/Movie -->
+  <g>
+    <rect x="800" y="280" width="360" height="220" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="820" y="306" fill="#8C8C8C" font-size="12">Card/Movie</text>
+    <rect x="820" y="320" width="150" height="90" rx="4" fill="#3A3A3A"/>
+    <rect x="825" y="395" width="40" height="12" rx="2" fill="#2ECC71"/>
+    <text x="828" y="404" fill="#0A0A0A" font-size="8" font-weight="bold">98%</text>
+    <text x="820" y="428" fill="#FFFFFF" font-size="12" font-weight="bold">Ocean Drift</text>
+    <text x="820" y="444" fill="#8C8C8C" font-size="10">2024 · 1h 52m</text>
+
+    <rect x="990" y="320" width="150" height="90" rx="4" fill="#3A3A3A"/>
+    <rect x="995" y="395" width="40" height="12" rx="2" fill="#F1C40F"/>
+    <text x="998" y="404" fill="#0A0A0A" font-size="8" font-weight="bold">76%</text>
+    <text x="990" y="428" fill="#FFFFFF" font-size="12" font-weight="bold">The Long Signal: A Documentary</text>
+    <text x="990" y="444" fill="#8C8C8C" font-size="10">2023 · 6 Episodes</text>
+    <text x="820" y="470" fill="#666" font-size="10">Same component — 2-word vs. 6-word title</text>
+  </g>
+
+  <!-- ListItem/Episode -->
+  <g>
+    <rect x="40" y="440" width="340" height="140" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="60" y="466" fill="#8C8C8C" font-size="12">ListItem/Episode</text>
+    <rect x="60" y="480" width="70" height="45" rx="4" fill="#3A3A3A"/>
+    <text x="140" y="495" fill="#FFFFFF" font-size="12" font-weight="bold">S1 E4 · Undertow</text>
+    <text x="140" y="512" fill="#8C8C8C" font-size="10">43m</text>
+    <polygon points="330,495 330,510 342,502" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Nav/Item -->
+  <g>
+    <rect x="420" y="440" width="340" height="140" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="440" y="466" fill="#8C8C8C" font-size="12">Nav/Item</text>
+    <text x="440" y="500" fill="#FFFFFF" font-size="14" font-weight="bold">Home</text>
+    <text x="530" y="500" fill="#B3B3B3" font-size="14">TV Shows</text>
+    <text x="630" y="500" fill="#B3B3B3" font-size="14">Movies</text>
+    <rect x="440" y="512" width="46" height="2" fill="#FFFFFF"/>
+  </g>
+
+  <!-- SelectableRow/Mood -->
+  <g>
+    <rect x="800" y="530" width="360" height="150" rx="6" fill="#1F1F1F" stroke="#333" stroke-width="1"/>
+    <text x="820" y="556" fill="#8C8C8C" font-size="12">SelectableRow/Mood</text>
+    <rect x="820" y="570" width="320" height="46" rx="6" fill="#2B2B2B" stroke="#E50914" stroke-width="2"/>
+    <circle cx="845" cy="593" r="10" fill="#E50914"/>
+    <text x="868" y="598" fill="#FFFFFF" font-size="13">Laugh out loud</text>
+    <circle cx="1120" cy="593" r="8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+    <path d="M1116 593 l3 3 l6 -7" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+  </g>
+
+  <text x="40" y="720" fill="#666" font-size="12">All frames above use Auto Layout at the top level — see Auto_Layout_Specs.md for exact settings.</text>
+</svg>
