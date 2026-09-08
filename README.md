@@ -85,7 +85,23 @@ Netflix-User-Research/
 ├── Slides/
 │   ├── Netflix_User_Research_Case_Study.pptx
 │   └── build_deck.js
-│
+|
+|Figma Components & Auto Layout
+├── README.md                         
+├── Components.md                      
+├── Component_Library/                 
+│   ├── README.md
+│   ├── Master_Components.md
+│   ├── Auto_Layout_Specs.md
+│   ├── Component_States.md
+│   ├── Responsive_Card_Templates.md
+│   ├── Spacing_Tokens.md
+│   └── assets/
+│       ├── master_components.svg
+│       ├── autolayout_stress_test.svg
+│       ├── component_states.svg
+│       ├── responsive_cards.svg
+│       └── spacing_tokens.svg│
 └── Style_Guide/
     └── Netflix_UX_Style_Guide.pdf     (9-page compiled style guide)
 ```
