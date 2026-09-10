@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Netflix UX Prototype</title>
+<style>
+  :root{
+    --red:#E50914; --black:#141414; --surface:#221F1F; --white:#FFFFFF;
+    --gray:#B3B3B3; --green:#46D369;
+    --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:#F5F5F1; font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    padding:24px;
+  }
+  .page-note{
+    position:fixed; top:16px; left:50%; transform:translateX(-50%);
+    font-size:12.5px; color:#6B6B6B; text-align:center; max-width:600px;
+  }
+  .phone{
+    width:390px; height:844px; background:var(--black); border-radius:40px;
+    box-shadow:0 30px 60px rgba(0,0,0,.25); overflow:hidden; position:relative;
+    border:8px solid #0a0a0a;
+  }
+  .screen{
+    position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
+    opacity:0; transform:translateX(24px); pointer-events:none;
+    transition:opacity .32s ease, transform .32s ease;
+  }
+  .screen.active{ opacity:1; transform:translateX(0); pointer-events:auto; }
+  .screen::-webkit-scrollbar{display:none;}
+
+  /* ---- Floating header ---- */
+  .floating-header{
+    position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px; transition:background .25s ease, box-shadow .25s ease, padding .25s ease;
+  }
+  .floating-header.scrolled{ background:rgba(20,20,20,.92); backdrop-filter:blur(6px); box-shadow:0 4px 12px rgba(0,0,0,.3); padding:8px 20px; }
+  .logo{ color:var(--red); font-weight:800; font-size:20px; letter-spacing:.5px; }
+  .header-icons{ display:flex; gap:16px; align-items:center; }
+  .icon-btn{ background:none; border:none; color:var(--white); font-size:17px; cursor:pointer; padding:4px; }
+
+  .hero{ height:300px; background:linear-gradient(135deg,#3A1013,var(--black)); padding:0 20px; position:relative; }
+  .hero-title{ position:absolute; bottom:96px; left:20px; color:var(--white); font-size:24px; font-weight:800; }
+  .hero-meta{ position:absolute; bottom:76px; left:20px; color:var(--gray); font-size:12px; }
+  .hero-actions{ position:absolute; bottom:20px; left:20px; display:flex; gap:10px; }
+
+  .btn{ border:none; border-radius:4px; font-weight:700; font-size:14px; padding:11px 20px; cursor:pointer; }
+  .btn-primary{ background:var(--white); color:var(--black); }
+  .btn-secondary{ background:transparent; color:var(--white); border:1.5px solid var(--gray); }
+  .btn-cta{ background:var(--red); color:var(--white); width:100%; padding:15px; border-radius:4px; font-size:14px; letter-spacing:.3px; }
+  .btn:focus-visible, .chip:focus-visible, .navitem:focus-visible, .card:focus-visible{ outline:2px solid var(--white); outline-offset:3px; }
+
+  .section-title{ color:var(--white); font-size:15px; font-weight:700; margin:18px 20px 10px; }
+  .row{ display:flex; gap:10px; padding:0 20px; overflow-x:auto; scrollbar-width:none; }
+  .row::-webkit-scrollbar{display:none;}
+  .card{ flex:0 0 108px; height:68px; border-radius:6px; position:relative; cursor:pointer; border:none; padding:0;
+         transition:transform .18s ease, box-shadow .18s ease; }
+  .card:hover{ transform:scale(1.06); box-shadow:0 8px 18px rgba(0,0,0,.35); z-index:2; }
+  .card .bar{ position:absolute; bottom:6px; left:6px; width:60%; height:3px; background:var(--red); border-radius:2px; }
+  .card .rank{ position:absolute; top:6px; left:6px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,.6); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+
+  .bottom-nav{ position:sticky; bottom:0; display:flex; background:var(--surface); border-top:1px solid #333; }
+  .navitem{ flex:1; background:none; border:none; color:var(--gray); font-size:11px; padding:10px 0 12px; cursor:pointer; position:relative; }
+  .navitem.active{ color:var(--white); font-weight:700; }
+  .navitem.active::before{ content:''; position:absolute; top:2px; left:50%; transform:translateX(-50%); width:6px; height:6px; border-radius:50%; background:var(--red); }
+
+  /* Search */
+  .search-bar{ margin:16px 20px; background:var(--surface); border-radius:6px; padding:13px 14px; color:var(--gray); font-size:13px; }
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; padding:0 20px 12px; }
+  .chip{ background:none; border:1.3px solid var(--gray); color:var(--white); border-radius:16px; padding:6px 14px; font-size:11.5px; font-weight:700; cursor:pointer; transition:background .15s,border-color .15s; }
+  .chip.active{ background:var(--red); border-color:var(--red); }
+  .label-sm{ color:var(--gray); font-size:12px; font-weight:700; padding:6px 20px 0; text-transform:uppercase; letter-spacing:.4px;}
+  .results{ padding:8px 20px; }
+  .result-item{ display:flex; gap:12px; padding:10px 0; cursor:pointer; }
+  .result-thumb{ width:62px; height:84px; border-radius:6px; flex-shrink:0; }
+  .result-text .t{ color:var(--white); font-size:13.5px; font-weight:700; }
+  .result-text .m{ color:var(--gray); font-size:11.5px; margin-top:4px; }
+
+  /* Skeleton loader */
+  .skeleton{ background:linear-gradient(90deg,#222 25%,#2c2c2c 37%,#222 63%); background-size:400% 100%; animation:shimmer 1.3s ease infinite; border-radius:6px; }
+  @keyframes shimmer{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+
+  /* Movie details */
+  .mdhero{ height:340px; background:linear-gradient(135deg,#3A1013,var(--black)); position:relative; }
+  .back-btn{ position:absolute; top:16px; left:16px; width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.5); border:none; color:#fff; font-size:16px; cursor:pointer; }
+  .play-overlay{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; }
+  .md-body{ padding:16px 20px; color:var(--white); }
+  .md-title{ font-size:22px; font-weight:800; margin:0 0 6px; }
+  .md-meta{ color:var(--gray); font-size:12px; margin-bottom:16px; }
+  .md-actions{ display:flex; gap:10px; margin-bottom:16px; }
+  .md-desc{ color:var(--gray); font-size:12.5px; line-height:1.4; margin-bottom:20px; }
+  .episode{ display:flex; gap:10px; background:var(--surface); border-radius:6px; padding:10px; margin-bottom:10px; cursor:pointer; align-items:center; }
+  .episode-thumb{ width:80px; height:48px; border-radius:4px; background:linear-gradient(135deg,#204A7A,#0A1F3A); flex-shrink:0; position:relative; }
+  .episode-thumb .prog{ position:absolute; bottom:0; left:0; height:3px; background:var(--red); border-radius:0 0 0 4px; }
+  .episode-text .t{ font-size:13px; font-weight:700; }
+  .episode-text .m{ font-size:11px; color:var(--gray); margin-top:3px; }
+
+  /* My Netflix */
+  .profile-row{ display:flex; align-items:center; gap:12px; padding:18px 20px 6px; }
+  .avatar{ width:36px; height:36px; border-radius:50%; background:var(--surface); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .dl-badge{ position:absolute; top:6px; right:6px; width:18px; height:18px; border-radius:50%; background:var(--green); color:#141414; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .progress-track{ height:6px; background:#333; border-radius:3px; margin:0 20px 14px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--red); width:0%; transition:width 1.4s ease; border-radius:3px; }
+
+  /* Drawer + overlay */
+  .scrim{ position:absolute; inset:0; background:rgba(0,0,0,0); pointer-events:none; transition:background .3s ease; z-index:20; }
+  .scrim.open{ background:rgba(0,0,0,.55); pointer-events:auto; }
+  .drawer{ position:absolute; top:0; right:0; bottom:0; width:280px; background:var(--surface); z-index:21;
+           transform:translateX(100%); transition:transform .32s cubic-bezier(.2,.8,.2,1); padding:24px 20px; color:#fff; }
+  .drawer.open{ transform:translateX(0); }
+  .drawer h3{ font-size:15px; margin:0 0 18px; color:var(--gray); text-transform:uppercase; letter-spacing:.5px; font-weight:700;}
+  .drawer-item{ padding:13px 0; border-bottom:1px solid #333; font-size:14px; cursor:pointer; display:flex; justify-content:space-between; }
+  .drawer-item:hover{ color:var(--red); }
+
+  .modal{ position:absolute; left:20px; right:20px; bottom:-100%; background:var(--surface); border-radius:14px 14px 0 0; z-index:22;
+          transition:bottom .34s cubic-bezier(.2,.8,.2,1); padding:22px 20px 28px; color:#fff; box-shadow:0 -8px 30px rgba(0,0,0,.4); }
+  .modal.open{ bottom:0; }
+  .modal-handle{ width:36px; height:4px; background:#555; border-radius:2px; margin:0 auto 16px; }
+
+  .mood-row{ display:flex; justify-content:space-between; align-items:center; background:var(--black); border-radius:10px; padding:14px 16px; margin-bottom:8px; cursor:pointer; transition:background .15s; }
+  .mood-row.selected{ background:var(--red); font-weight:700; }
+  .time-chips{ display:flex; gap:8px; margin:14px 0 18px; }
+  .time-chip{ flex:1; text-align:center; padding:10px 0; border-radius:8px; border:1.4px solid var(--gray); color:#fff; font-size:11.5px; font-weight:700; cursor:pointer; }
+  .time-chip.selected{ background:var(--red); border-color:var(--red); }
+
+  .spinner{ width:34px; height:34px; border-radius:50%; border:3px solid #3a3a3a; border-top-color:var(--red); animation:spin .8s linear infinite; margin:30px auto; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .fade-in{ animation:fadein .3s ease; }
+  @keyframes fadein{ from{opacity:0} to{opacity:1} }
+
+  .fab{ position:absolute; right:20px; bottom:84px; width:56px; height:56px; border-radius:50%; background:var(--red);
+        border:none; color:#fff; font-size:22px; box-shadow:0 6px 16px rgba(229,9,20,.5); cursor:pointer; z-index:10; }
+</style>
+</head>
+<body>
+
+<div class="page-note">Netflix UX Prototype — click through Home, Search, a movie card, the profile drawer, and the SmartPick FAB. Built with vanilla HTML/CSS/JS as a stand-in for a shareable Figma prototype link.</div>
+
+<div class="phone" id="phone">
+
+  <!-- ============ HOME ============ -->
+  <div class="screen active" id="screen-home">
+    <div class="floating-header" id="home-header">
+      <div class="logo">NETFLIX</div>
+      <div class="header-icons">
+        <button class="icon-btn" aria-label="Search" onclick="goTo('search')">🔍</button>
+        <button class="icon-btn avatar" aria-label="Open profile menu" onclick="openDrawer()">👤</button>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="hero-title">STRANGER ECHOES</div>
+      <div class="hero-meta">Series · 2026 · Sci-Fi</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="openMovie()">▶ Play</button>
+        <button class="btn btn-secondary">+ My List</button>
+      </div>
+    </div>
+    <div class="section-title">Continue Watching</div>
+    <div class="row">
+      <button class="card" style="background:linear-gradient(135deg,#7A2020,#2A0A0A)" onclick="openMovie()"><span class="bar"></span></button>
+      <button class="card" style="background:linear-gradient(135deg,#204A7A,#0A1F3A)" onclick="openMovie()"><span class="bar" style="width:35%"></span></button>
+      <button class="card" style="background:linear-gradient(135deg,#3A5F1E,#122408)" onclick="openMovie()"><span class="bar" style="width:80%"></span></button>
+    </div>
+    <div class="section-title">Trending Now</div>
+    <div class="row">
+      <button class="card" style="background:linear-gradient(135deg,#7A2020,#2A0A0A)" onclick="openMovie()"><span class="rank">1</span></button>
+      <button class="card" style="background:linear-gradient(135deg,#204A7A,#0A1F3A)" onclick="openMovie()"><span class="rank">2</span></button>
+      <button class="card" style="background:linear-gradient(135deg,#3A5F1E,#122408)" onclick="openMovie()"><span class="rank">3</span></button>
+    </div>
+    <div class="section-title">Recommended For You</div>
+    <div class="row" style="padding-bottom:24px;">
+      <button class="card" style="background:linear-gradient(135deg,#5A1E7A,#1F0A2A)" onclick="openMovie()"></button>
+      <button class="card" style="background:linear-gradient(135deg,#7A5A1E,#2A1F0A)" onclick="openMovie()"></button>
+      <button class="card" style="background:linear-gradient(135deg,#1E7A6E,#0A2A26)" onclick="openMovie()"></button>
+    </div>
+
+    <button class="fab" onclick="openSmartPick()" aria-label="Open SmartPick">✨</button>
+
+    <div class="bottom-nav">
+      <button class="navitem active" data-nav="home">Home</button>
+      <button class="navitem" data-nav="search" onclick="goTo('search')">Movies</button>
+      <button class="navitem" data-nav="search2" onclick="goTo('search')">Shows</button>
+      <button class="navitem" data-nav="mynetflix" onclick="goTo('mynetflix')">My Netflix</button>
+    </div>
+
+    <div class="scrim" id="home-scrim" onclick="closeDrawer()"></div>
+    <div class="drawer" id="home-drawer">
+      <h3>Account</h3>
+      <div class="drawer-item">Manage Profiles <span>›</span></div>
+      <div class="drawer-item">Subscription <span>›</span></div>
+      <div class="drawer-item">Settings <span>›</span></div>
+      <div class="drawer-item">Language <span>›</span></div>
+      <div class="drawer-item">Help <span>›</span></div>
+      <div class="drawer-item" onclick="closeDrawer()" style="border:none;color:#B3B3B3;margin-top:8px;">Close ✕</div>
+    </div>
+
+    <div class="modal" id="smartpick-modal">
+      <div class="modal-handle"></div>
+      <div id="smartpick-body">
+        <div style="font-size:17px;font-weight:800;margin-bottom:14px;">What is your mood?</div>
+        <div class="mood-row" onclick="selectMood(this)">😊 Happy</div>
+        <div class="mood-row selected" onclick="selectMood(this)">😌 Relaxed <span>✓</span></div>
+        <div class="mood-row" onclick="selectMood(this)">😱 Excited</div>
+        <div class="time-chips">
+          <div class="time-chip selected" onclick="selectChip(this)">30 min</div>
+          <div class="time-chip" onclick="selectChip(this)">1 hour</div>
+          <div class="time-chip" onclick="selectChip(this)">Binge</div>
+        </div>
+        <button class="btn-cta" onclick="findSomething()">FIND SOMETHING TO WATCH</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SEARCH ============ -->
+  <div class="screen" id="screen-search">
+    <div class="floating-header"><div style="color:#fff;font-weight:700;font-size:17px;">← Search</div></div>
+    <div class="search-bar">🔍 Search movies &amp; shows</div>
+    <div class="label-sm">Genre</div>
+    <div class="chips">
+      <button class="chip" onclick="toggleChip(this)">Action</button>
+      <button class="chip active" onclick="toggleChip(this)">Comedy</button>
+      <button class="chip" onclick="toggleChip(this)">Horror</button>
+      <button class="chip" onclick="toggleChip(this)">Drama</button>
+    </div>
+    <div class="label-sm">Language</div>
+    <div class="chips">
+      <button class="chip active" onclick="toggleChip(this)">English</button>
+      <button class="chip" onclick="toggleChip(this)">Hindi</button>
+      <button class="chip" onclick="toggleChip(this)">Korean</button>
+      <button class="chip" onclick="toggleChip(this)">Japanese</button>
+    </div>
+    <div class="section-title">Search Results</div>
+    <div class="results" id="search-results">
+      <div class="result-item" onclick="openMovie()">
+        <div class="result-thumb" style="background:linear-gradient(135deg,#7A2020,#2A0A0A)"></div>
+        <div class="result-text"><div class="t">Stranger Echoes</div><div class="m">Series · Sci-Fi</div></div>
+      </div>
+      <div class="result-item" onclick="openMovie()">
+        <div class="result-thumb" style="background:linear-gradient(135deg,#204A7A,#0A1F3A)"></div>
+        <div class="result-text"><div class="t">Comedy Nights</div><div class="m">Movie · Comedy</div></div>
+      </div>
+      <div class="result-item" onclick="openMovie()">
+        <div class="result-thumb" style="background:linear-gradient(135deg,#3A5F1E,#122408)"></div>
+        <div class="result-text"><div class="t">The Long Drama</div><div class="m">Series · Drama</div></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="navitem" onclick="goTo('home')">Home</button>
+      <button class="navitem active">Movies</button>
+      <button class="navitem" onclick="goTo('search')">Shows</button>
+      <button class="navitem" onclick="goTo('mynetflix')">My Netflix</button>
+    </div>
+  </div>
+
+  <!-- ============ MOVIE DETAILS ============ -->
+  <div class="screen" id="screen-movie">
+    <div class="mdhero">
+      <button class="back-btn" onclick="goTo('home')">←</button>
+      <button class="play-overlay" onclick="playEpisode(null)">▶</button>
+    </div>
+    <div class="md-body">
+      <div class="md-title">Stranger Echoes</div>
+      <div class="md-meta">⭐ 4.7 · 2026 · 2 Seasons · 16+</div>
+      <div class="md-actions">
+        <button class="btn btn-primary" onclick="playEpisode(null)">▶ Play</button>
+        <button class="btn btn-secondary">+ My List</button>
+      </div>
+      <div class="md-desc">A signal from deep space reveals a secret that could rewrite everything we know.</div>
+      <div class="section-title" style="margin:0 0 10px;padding:0;">Episodes</div>
+      <div class="episode" onclick="playEpisode(this)">
+        <div class="episode-thumb"><div class="prog" style="width:100%"></div></div>
+        <div class="episode-text"><div class="t">Episode 1: Signal</div><div class="m">42m</div></div>
+      </div>
+      <div class="episode" onclick="playEpisode(this)">
+        <div class="episode-thumb"><div class="prog" style="width:40%"></div></div>
+        <div class="episode-text"><div class="t">Episode 2: Signal</div><div class="m">42m</div></div>
+      </div>
+      <div class="episode" onclick="playEpisode(this)">
+        <div class="episode-thumb"><div class="prog" style="width:0%"></div></div>
+        <div class="episode-text"><div class="t">Episode 3: Signal</div><div class="m">42m</div></div>
+      </div>
+    </div>
+    <div class="scrim" id="movie-scrim" onclick="closePlayer()"></div>
+    <div class="modal" id="player-modal">
+      <div class="modal-handle"></div>
+      <div id="player-body" style="text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- ============ MY NETFLIX ============ -->
+  <div class="screen" id="screen-mynetflix">
+    <div class="profile-row">
+      <div class="avatar">👤</div>
+      <div style="color:#fff;font-size:19px;font-weight:800;">My Netflix</div>
+    </div>
+    <div class="section-title">Downloads</div>
+    <div class="row" style="margin-bottom:6px;">
+      <div class="card" style="background:linear-gradient(135deg,#7A2020,#2A0A0A)"></div>
+      <div class="card" style="background:linear-gradient(135deg,#204A7A,#0A1F3A);position:relative;" id="dl-card">
+        <div class="dl-badge" id="dl-badge" style="display:none;">✓</div>
+      </div>
+    </div>
+    <div style="padding:0 20px;">
+      <button class="btn btn-secondary" style="width:100%;" onclick="startDownload()">⬇ Simulate download</button>
+    </div>
+    <div class="progress-track" style="margin-top:14px;"><div class="progress-fill" id="dl-progress"></div></div>
+    <div class="section-title">My List</div>
+    <div class="row" style="padding-bottom:16px;">
+      <div class="card" style="background:linear-gradient(135deg,#5A1E7A,#1F0A2A)"></div>
+      <div class="card" style="background:linear-gradient(135deg,#7A5A1E,#2A1F0A)"></div>
+      <div class="card" style="background:linear-gradient(135deg,#1E7A6E,#0A2A26)"></div>
+    </div>
+    <div class="bottom-nav">
+      <button class="navitem" onclick="goTo('home')">Home</button>
+      <button class="navitem" onclick="goTo('search')">Movies</button>
+      <button class="navitem" onclick="goTo('search')">Shows</button>
+      <button class="navitem active">My Netflix</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+function openMovie(){ goTo('movie'); document.getElementById('screen-movie').scrollTop = 0; }
+
+/* Floating header shrink on scroll */
+document.getElementById('screen-home').addEventListener('scroll', function(){
+  const header = document.getElementById('home-header');
+  if(this.scrollTop > 30){ header.classList.add('scrolled'); } else { header.classList.remove('scrolled'); }
+});
+
+/* Drawer */
+function openDrawer(){
+  document.getElementById('home-scrim').classList.add('open');
+  document.getElementById('home-drawer').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('home-scrim').classList.remove('open');
+  document.getElementById('home-drawer').classList.remove('open');
+}
+
+/* SmartPick modal */
+function openSmartPick(){ document.getElementById('smartpick-modal').classList.add('open'); }
+function closeSmartPick(){ document.getElementById('smartpick-modal').classList.remove('open'); }
+function selectMood(el){
+  el.parentElement.querySelectorAll('.mood-row').forEach(m=>{ m.classList.remove('selected'); m.innerHTML = m.innerHTML.replace(' ✓','').replace('<span>✓</span>',''); });
+  el.classList.add('selected');
+  el.innerHTML += ' <span>✓</span>';
+}
+function selectChip(el){
+  el.parentElement.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function findSomething(){
+  const body = document.getElementById('smartpick-body');
+  body.innerHTML = '<div class="spinner"></div><div style="text-align:center;color:#B3B3B3;font-size:13px;">Finding something great…</div>';
+  setTimeout(()=>{
+    body.innerHTML = `
+      <div class="fade-in" style="text-align:center;">
+        <div style="width:100%;height:140px;border-radius:10px;background:linear-gradient(135deg,#3A5F1E,#122408);margin-bottom:14px;"></div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:4px;">The Comfort Zone</div>
+        <div style="color:#B3B3B3;font-size:12px;margin-bottom:16px;">Comedy · 32m · Matches: Relaxed, 30 min</div>
+        <button class="btn-cta" onclick="closeSmartPick(); openMovie();">▶ PLAY NOW</button>
+      </div>`;
+  }, 1200);
+}
+
+/* Search chips */
+function toggleChip(el){ el.classList.toggle('active'); }
+
+/* Episode / player modal with loading state */
+function playEpisode(el){
+  document.getElementById('movie-scrim').classList.add('open');
+  const modal = document.getElementById('player-modal');
+  modal.classList.add('open');
+  const body = document.getElementById('player-body');
+  body.innerHTML = '<div class="spinner"></div><div style="color:#B3B3B3;font-size:13px;">Loading episode…</div>';
+  setTimeout(()=>{
+    body.innerHTML = `
+      <div class="fade-in">
+        <div style="font-size:40px;margin-bottom:10px;">▶</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Now Playing</div>
+        <div style="color:#B3B3B3;font-size:12px;margin-bottom:18px;">Signal · 42m</div>
+        <button class="btn btn-secondary" onclick="closePlayer()">Close Player</button>
+      </div>`;
+  }, 900);
+}
+function closePlayer(){
+  document.getElementById('movie-scrim').classList.remove('open');
+  document.getElementById('player-modal').classList.remove('open');
+}
+
+/* Download progress simulation */
+function startDownload(){
+  const fill = document.getElementById('dl-progress');
+  const badge = document.getElementById('dl-badge');
+  badge.style.display = 'none';
+  fill.style.width = '0%';
+  requestAnimationFrame(()=>{ fill.style.width = '100%'; });
+  setTimeout(()=>{ badge.style.display = 'flex'; }, 1450);
+}
+</script>
+</body>
+</html>
